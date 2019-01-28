@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
@@ -11,6 +12,9 @@ namespace WebApi
     {
         public void Configuration(IAppBuilder app)
         {
+            LisaEventLog lisaEventLog = new LisaEventLog();
+            lisaEventLog.WriteEntry("Application start.", EventLogEntryType.Information);
+
             var config = new HttpConfiguration();
 
             app.UseSwaggerUi3(typeof(Startup).Assembly, settings =>
