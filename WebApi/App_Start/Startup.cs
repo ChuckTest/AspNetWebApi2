@@ -26,7 +26,7 @@ namespace WebApi
                     // configure settings here
                     // settings.GeneratorSettings.*: Generator settings and extension points
                     // settings.*: Routing and UI settings
-                    settings.MiddlewareBasePath = "/swagger";
+                    //settings.MiddlewareBasePath = "/swagger";
                     settings.GeneratorSettings.DefaultUrlTemplate = "api/{controller}/{action}/{id}";
                 });
                 app.UseWebApi(config);
