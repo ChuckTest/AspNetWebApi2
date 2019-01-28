@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
@@ -13,22 +15,35 @@ namespace WebApi
         public void Configuration(IAppBuilder app)
         {
             LisaEventLog lisaEventLog = new LisaEventLog();
-            lisaEventLog.WriteEntry("Application start.", EventLogEntryType.Information);
-
-            var config = new HttpConfiguration();
-
-            app.UseSwaggerUi3(typeof(Startup).Assembly, settings =>
+            try
             {
-                // configure settings here
-                // settings.GeneratorSettings.*: Generator settings and extension points
-                // settings.*: Routing and UI settings
-                settings.MiddlewareBasePath = "/swagger";
-                settings.GeneratorSettings.DefaultUrlTemplate = "api/{controller}/{action}/{id}";
-            });
-            app.UseWebApi(config);
+                lisaEventLog.WriteEntry("Application start.", EventLogEntryType.Information);
 
-            Register(config);
-            config.EnsureInitialized();
+                var config = new HttpConfiguration();
+
+                app.UseSwaggerUi3(typeof(Startup).Assembly, settings =>
+                {
+                    // configure settings here
+                    // settings.GeneratorSettings.*: Generator settings and extension points
+                    // settings.*: Routing and UI settings
+                    settings.MiddlewareBasePath = "/swagger";
+                    settings.GeneratorSettings.DefaultUrlTemplate = "api/{controller}/{action}/{id}";
+                });
+                app.UseWebApi(config);
+
+                Register(config);
+                config.EnsureInitialized();
+            }
+            catch (Exception ex)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                while (ex != null)
+                {
+                    stringBuilder.AppendLine(ex.ToString());
+                    ex = ex.InnerException;
+                }
+                lisaEventLog.WriteEntry(stringBuilder.ToString(), EventLogEntryType.Error);
+            }
         }
 
         public void Register(HttpConfiguration config)
@@ -45,7 +60,7 @@ namespace WebApi
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            config.MessageHandlers.Add(new CustomMessageHandler());
+            //config.MessageHandlers.Add(new CustomMessageHandler());
         }
 
         private void InitAutofac()
