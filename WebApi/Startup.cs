@@ -10,7 +10,7 @@ using Owin;
 
 namespace WebApi
 {
-    public class Startup
+    public partial class Startup
     {
         public void Configuration(IAppBuilder app)
         {
@@ -33,6 +33,8 @@ namespace WebApi
 
                 Register(config);
                 config.EnsureInitialized();
+
+                ConfigureAuth(app);
             }
             catch (Exception ex)
             {
@@ -60,6 +62,7 @@ namespace WebApi
                 defaults: new { id = RouteParameter.Optional }
             );
 
+            config.Filters.Add(new AuthorizeAttribute());
             //config.MessageHandlers.Add(new CustomMessageHandler());
         }
 
