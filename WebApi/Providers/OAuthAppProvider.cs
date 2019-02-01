@@ -8,6 +8,11 @@ namespace WebApi.Providers
 {
     public partial class OAuthAppProvider : OAuthAuthorizationServerProvider
     {
+        /// <summary>
+        ///  validate that the origin of the request is a registered client_id
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
             string clientId;
@@ -25,10 +30,15 @@ namespace WebApi.Providers
             return task;
         }
 
+        /// <summary>
+        /// validate provided username and password when the grant_type is set to password
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override Task
             GrantClientCredentials(OAuthGrantClientCredentialsContext context)
         {
-            return Task.Factory.StartNew(() =>
+            var task= Task.Factory.StartNew(() =>
             {
                 try
                 {
@@ -55,6 +65,7 @@ namespace WebApi.Providers
                     //logger.Error(string.Format("GrantResourceOwnerCredentials(){0}Returned tuple is null for ClientID : {1}.", Environment.NewLine, context.ClientId));
                 }
             });
+            return task;
         }
     }
 }
