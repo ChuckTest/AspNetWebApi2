@@ -59,9 +59,10 @@ namespace WebApi.Providers
                         //logger.Error(string.Format("GrantResourceOwnerCredentials(){0}Credentials not valid for ClientID : {1}.", Environment.NewLine, context.ClientId));
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     context.SetError("Error", "internal server error");
+                    LogHelper.CreateLog(ex);
                     //logger.Error(string.Format("GrantResourceOwnerCredentials(){0}Returned tuple is null for ClientID : {1}.", Environment.NewLine, context.ClientId));
                 }
             });
