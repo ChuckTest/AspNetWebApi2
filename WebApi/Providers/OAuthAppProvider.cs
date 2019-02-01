@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 
@@ -23,7 +20,9 @@ namespace WebApi.Providers
             {
                 context.Validated();
             }
-            return base.ValidateClientAuthentication(context);
+
+            var task = base.ValidateClientAuthentication(context);
+            return task;
         }
 
         public override Task
