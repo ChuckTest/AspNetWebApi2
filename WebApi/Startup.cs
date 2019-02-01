@@ -26,12 +26,13 @@ namespace WebApi
                     //settings.MiddlewareBasePath = "/swagger";
                     settings.GeneratorSettings.DefaultUrlTemplate = "api/{controller}/{action}/{id}";
                 });
-                app.UseWebApi(config);
 
                 Register(config);
-                config.EnsureInitialized();
 
                 ConfigureAuth(app);
+
+                app.UseWebApi(config);
+                config.EnsureInitialized();
             }
             catch (Exception ex)
             {

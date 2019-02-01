@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
@@ -19,8 +16,8 @@ namespace WebApi
 	public partial class Startup
 	{
         public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
-
-        static Startup()
+        
+        public void ConfigureAuth(IAppBuilder app)
         {
             OAuthOptions = new OAuthAuthorizationServerOptions
             {
@@ -29,12 +26,8 @@ namespace WebApi
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(General.AccessTokenExpiryDays),
                 AllowInsecureHttp = General.UseHttp
             };
-
-        }
-
-        public void ConfigureAuth(IAppBuilder app)
-        {
             app.UseOAuthBearerTokens(OAuthOptions);
+            LogHelper.CreateLog("ConfigureAuth method");
         }
     }
 }
