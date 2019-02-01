@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Web.Hosting;
 
 namespace WebApi
 {
@@ -20,11 +21,19 @@ namespace WebApi
 
         public void WriteEntry(string error, EventLogEntryType type)
         {
-            var sourceName = AppDomain.CurrentDomain.FriendlyName;
+            #region this section can only be used for website project
+
+            string applicationAlias = HostingEnvironment.ApplicationVirtualPath;
+            string applicationName = applicationAlias?.Substring(1);
+            var sourceName = applicationName;
+
+            #endregion
+
             if (!EventLog.SourceExists(sourceName))
             {
                 EventLog.CreateEventSource(sourceName, _logName);
             }
+
             using (EventLog eventLog = new EventLog(_logName))
             {
                 eventLog.Source = sourceName;
