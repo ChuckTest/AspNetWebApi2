@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Reflection;
-using System.Text;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
@@ -14,10 +12,9 @@ namespace WebApi
     {
         public void Configuration(IAppBuilder app)
         {
-            LisaEventLog lisaEventLog = new LisaEventLog();
             try
             {
-                lisaEventLog.WriteEntry("Application start.", EventLogEntryType.Information);
+                LogHelper.CreateLog($"Application {AppDomain.CurrentDomain.FriendlyName} start.");
 
                 var config = new HttpConfiguration();
 
@@ -38,13 +35,7 @@ namespace WebApi
             }
             catch (Exception ex)
             {
-                StringBuilder stringBuilder = new StringBuilder();
-                while (ex != null)
-                {
-                    stringBuilder.AppendLine(ex.ToString());
-                    ex = ex.InnerException;
-                }
-                lisaEventLog.WriteEntry(stringBuilder.ToString(), EventLogEntryType.Error);
+                LogHelper.CreateLog(ex);
             }
         }
 
