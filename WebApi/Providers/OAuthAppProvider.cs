@@ -49,7 +49,10 @@ namespace WebApi.Providers
                     if (isValid)
                     {
                         var oAuthIdentity = new ClaimsIdentity(context.Options.AuthenticationType);
-                        oAuthIdentity.AddClaim(new Claim("ClientID", context.ClientId));
+                        if (context.ClientId != null)
+                        {
+                            oAuthIdentity.AddClaim(new Claim("ClientID", context.ClientId));
+                        }
                         var ticket = new AuthenticationTicket(oAuthIdentity, new AuthenticationProperties());
                         context.Validated(ticket);
                     }
