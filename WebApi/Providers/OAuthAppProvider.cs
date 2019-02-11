@@ -1,33 +1,24 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
+using WebApi.Infrastructure;
 
 namespace WebApi.Providers
 {
     public partial class OAuthAppProvider : OAuthAuthorizationServerProvider
     {
+
         /// <summary>
-        ///  validate that the origin of the request is a registered client_id
+        /// validate that the origin of the request is a registered client_id
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
-            string clientId;
-            context.TryGetFormCredentials(out clientId, out string clientSecret);
-            if (!string.IsNullOrEmpty(clientId))
-            {
-                context.Validated(clientId);
-            }
-            else
-            {
-                context.Validated();
-            }
-
-            var task = base.ValidateClientAuthentication(context);
-            return task;
+            context.Validated();
+            return Task.FromResult<object>(null);
         }
 
         /// <summary>
@@ -35,41 +26,30 @@ namespace WebApi.Providers
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override Task
-            GrantClientCredentials(OAuthGrantClientCredentialsContext context)
+        public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-            var task= Task.Factory.StartNew(() =>
-            {
-                try
-                {
-                    bool isValid = false;
-                    isValid = true; //This should be the Service/DB call to validate the client id, client secret.
-                    //ValidateApp(context.ClientId, clientSecret);
 
-                    if (isValid)
-                    {
-                        var oAuthIdentity = new ClaimsIdentity(context.Options.AuthenticationType);
-                        if (context.ClientId != null)
-                        {
-                            oAuthIdentity.AddClaim(new Claim("ClientID", context.ClientId));
-                        }
-                        var ticket = new AuthenticationTicket(oAuthIdentity, new AuthenticationProperties());
-                        context.Validated(ticket);
-                    }
-                    else
-                    {
-                        context.SetError("Error", "Invalid");
-                        //logger.Error(string.Format("GrantResourceOwnerCredentials(){0}Credentials not valid for ClientID : {1}.", Environment.NewLine, context.ClientId));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    context.SetError("Error", "internal server error");
-                    LogHelper.CreateLog(ex);
-                    //logger.Error(string.Format("GrantResourceOwnerCredentials(){0}Returned tuple is null for ClientID : {1}.", Environment.NewLine, context.ClientId));
-                }
-            });
-            return task;
+            var allowedOrigin = "*";
+
+            context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { allowedOrigin });
+
+            var userManager = context.OwinContext.GetUserManager<RepositoryUserManager>();
+
+            RepositoryUser user = await userManager.FindAsync(context.UserName, context.Password);
+
+            if (user == null)
+            {
+                context.SetError("invalid_grant", "The user name or password is incorrect.");
+                return;
+            }
+
+            ClaimsIdentity oAuthIdentity = userManager.GenerateUserIdentityAsync("JWT");
+
+            var ticket = new AuthenticationTicket(oAuthIdentity, null);
+
+            context.Validated(ticket);
+
         }
+
     }
 }

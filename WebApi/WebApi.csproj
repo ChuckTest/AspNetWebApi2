@@ -139,7 +139,9 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Infrastructure\RepositoryUserManager.cs" />
     <Compile Include="LogHelper.cs" />
+    <Compile Include="Infrastructure\RepositoryUser.cs" />
     <Compile Include="Providers\OAuthAppProvider.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
