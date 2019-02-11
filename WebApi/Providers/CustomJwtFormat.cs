@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataHandler.Encoder;
-using Thinktecture.IdentityModel.Tokens;
 
 namespace WebApi.Providers
 {
@@ -30,13 +30,15 @@ namespace WebApi.Providers
 
             var keyByteArray = TextEncodings.Base64Url.Decode(symmetricKeyAsBase64);
 
-            var signingKey = new HmacSigningCredentials(keyByteArray);
+            SecurityKey securityKey = new SymmetricSecurityKey(keyByteArray);
+            var signingKey = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
 
             var issued = data.Properties.IssuedUtc;
 
             var expires = data.Properties.ExpiresUtc;
 
-            var token = new JwtSecurityToken(_issuer, audienceId, data.Identity.Claims, issued.Value.UtcDateTime, expires.Value.UtcDateTime, signingKey);
+            var token = new JwtSecurityToken(_issuer, audienceId, data.Identity.Claims, issued.Value.UtcDateTime,
+                expires.Value.UtcDateTime, signingKey);
 
             var handler = new JwtSecurityTokenHandler();
 
