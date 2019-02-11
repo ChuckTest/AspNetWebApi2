@@ -158,6 +158,7 @@
     <Compile Include="Infrastructure\RepositoryUserManager.cs" />
     <Compile Include="LogHelper.cs" />
     <Compile Include="Infrastructure\RepositoryUser.cs" />
+    <Compile Include="Providers\CustomJwtFormat.cs" />
     <Compile Include="Providers\OAuthAppProvider.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
