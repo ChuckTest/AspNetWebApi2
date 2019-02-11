@@ -2,6 +2,7 @@
 using Microsoft.Owin;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
+using WebApi.Infrastructure;
 using WebApi.Providers;
 
 namespace WebApi
@@ -17,6 +18,7 @@ namespace WebApi
 	{
         private void ConfigureOAuthTokenGeneration(IAppBuilder app)
         {
+            app.CreatePerOwinContext<RepositoryUserManager>(RepositoryUserManager.Create);
             OAuthAuthorizationServerOptions OAuthServerOptions = new OAuthAuthorizationServerOptions()
             {
                 //For Dev enviroment only (on production should be AllowInsecureHttp = false)
