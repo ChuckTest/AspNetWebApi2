@@ -15,19 +15,20 @@ namespace WebApi
 
 	public partial class Startup
 	{
-        public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
-        
-        public void ConfigureAuth(IAppBuilder app)
+        private void ConfigureOAuthTokenGeneration(IAppBuilder app)
         {
-            OAuthOptions = new OAuthAuthorizationServerOptions
+            OAuthAuthorizationServerOptions OAuthServerOptions = new OAuthAuthorizationServerOptions()
             {
+                //For Dev enviroment only (on production should be AllowInsecureHttp = false)
+                AllowInsecureHttp = General.UseHttp,
                 TokenEndpointPath = new PathString("/oauth/token"),
-                Provider = new OAuthAppProvider(),
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(General.AccessTokenExpiryDays),
-                AllowInsecureHttp = General.UseHttp
+                Provider = new OAuthAppProvider(),
+                AccessTokenFormat = new CustomJwtFormat("http://localhost:59822")
             };
-            app.UseOAuthBearerTokens(OAuthOptions);
-            LogHelper.CreateLog("ConfigureAuth method");
+
+            // OAuth 2.0 Bearer Access Token Generation
+            app.UseOAuthAuthorizationServer(OAuthServerOptions);
         }
     }
 }

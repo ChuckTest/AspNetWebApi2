@@ -29,7 +29,7 @@ namespace WebApi
 
                 Register(config);
 
-                ConfigureAuth(app);
+                ConfigureOAuthTokenGeneration(app);
 
                 app.UseWebApi(config);
                 config.EnsureInitialized();
