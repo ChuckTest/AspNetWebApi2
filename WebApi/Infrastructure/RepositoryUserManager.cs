@@ -10,7 +10,7 @@ namespace WebApi.Infrastructure
     {
         public Task<RepositoryUser> FindAsync(string userName, string password)
         {
-            return null;
+            return Task.FromResult<RepositoryUser>(null);
         }
 
         //Rest of code is removed for brevity
